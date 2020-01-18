@@ -58,19 +58,22 @@
                     v-for="(item, i) in editedItem"
                     :key="i"
                   >
-                  {{item}}
+                  {{editedItem[i]}}
                   
                     <ul>
                       <li v-if="Array.isArray(item)">
-                        {{ i }}:
+                        {{ i }}:{{editedItem[i]}}
+                        <!-- <p v-for="(j,k) in editedItem[i]" :key="j">{{k}}</p> -->
                         <v-text-field
-                          v-for="j in item"
-                          :key="j"
+                          v-for="(j,k) in editedItem[i]"
+                          :key="k"
                           :value="j"
+                          v-model="editedItem[i][k]"
                         ></v-text-field>
                       </li>
                       <li v-else>
-                        {{ i }}: <v-text-field :value="item"></v-text-field>
+                        <!-- {{editedItem[i]}} -->
+                        {{ i }}: <v-text-field :value="editedItem[i]" v-model="editedItem[i]"></v-text-field>
                       </li>
                     </ul>
                   </v-col>
