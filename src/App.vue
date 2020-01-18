@@ -15,7 +15,7 @@
       <v-navigation-drawer permanent v-if="drawer" fixed class="side-bar">
         <v-list-item>
           <v-list-item-content>
-            <router-link to="/articles/1" @click.stop="ChangeDrawer"><v-list-item-title class="title">
+            <router-link to="/" @click.stop="ChangeDrawer"><v-list-item-title class="title">
               На главную
             </v-list-item-title></router-link>
             <!-- <v-list-item-subtitle>

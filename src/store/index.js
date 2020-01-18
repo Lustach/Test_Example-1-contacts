@@ -10,23 +10,23 @@ export default new Vuex.Store({
         FIO: "Луста Владислав Михайлович",
         phone_number: ["+380714494247", "+380714595248"],
         email: ["lusta.vlad@mail.ru", "lusta.vlad2001@gmail.com"],
-        web_site: "https://vk.com/tartarin3",
+        web_site: "https://www.youtube.com/",
         birthday: "04.01.2001",
         company: "Any",
         photo_src: "/src/static/img/VladLusta.jpg",
-        category: "best friends"
+        category: "best friends",
       },
       {
         FIO: "Куркурин Никита Леонидович",
         phone_number: ["+380714412687", "+380714595213"],
         email: ["nik.kurk@mail.ru", "kurk.nik@gmail.com"],
-        web_site: "https://vk.com/antipupsik",
+        web_site: "https://www.youtube.com/",
         birthday: "23.03.2001",
         company: "Any",
         photo_src: "../static/img/Kurkur.jpg",
-        category: "best friends"
+        category: "collegs",
       }
-    ]
+    ],
     // contacts_headers:[
 
     // ],
