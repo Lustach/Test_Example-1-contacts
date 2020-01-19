@@ -15,6 +15,17 @@
           single-line
           hide-details
         ></v-text-field>
+        <v-dialog v-model="forDelete" max-width="250px" class="d-flex">
+          <v-card>
+            <v-card-title>
+              Удалить контакт?
+            </v-card-title>
+            <v-card-actions class="justify-center align-center">
+              <v-btn color="primary" @click="save(deletedItem)">Да</v-btn>
+              <v-btn color="primary" @click="close()">Нет</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <v-dialog v-model="dialog" max-width="425px">
           <v-card>
             <v-card-text>
@@ -47,8 +58,8 @@
         </v-dialog>
 
         <v-dialog v-model="forEdit" max-width="825px">
-          {{editedItem}}
-          {{contacts}}
+          <!-- {{ editedItem }}
+          {{ contacts }} -->
           <v-card>
             <v-card-text>
               <v-container>
@@ -61,18 +72,40 @@
                     :key="i"
                   >
                     <ul>
-                      <li v-if="Array.isArray(item)">
-                        {{ i }}:{{editedItem[i]}}
+                      <li v-if="Array.isArray(item)" >
+                        {{ i }}:
                         <!-- <p v-for="(j,k) in editedItem[i]" :key="j">{{k}}</p> -->
-                        <v-text-field
+                        <!-- <v-text-field
                           v-for="(j,k) in editedItem[i]"
                           :key="k"
-                          v-model="editedItem[i][k]"
-                        ></v-text-field>
+                          :value="editedItem[i][k]"
+                          v-model="$event.target.value"
+                        ></v-text-field> -->
+                        <br />
+                        <v-col cols="12" class="pa-0" >
+                          <input
+                            class="custom_field"
+                            style="border-bottom-style:solid;
+                            border-bottom-width:1px;
+                            border-color:black;
+                            height:32px;width:inherit;color:black;
+                            outline:none;"
+                            type="text"
+                            v-for="(j, k) in editedItem[i]"
+                            :key="k"
+                            :value="editedItem[i][k]"
+                            @input="editedItem[i][k] = $event.target.value"
+                          />
+                          <br />
+                        </v-col>
                       </li>
                       <li v-else>
                         <!-- {{editedItem[i]}} -->
-                        {{ i }}: <v-text-field :value="editedItem[i]" v-model="editedItem[i]"></v-text-field>
+                        {{ i }}:
+                        <v-text-field
+                          :value="editedItem[i]"
+                          v-model="editedItem[i]"
+                        ></v-text-field>
                       </li>
                     </ul>
                   </v-col>
@@ -197,7 +230,7 @@ export default {
       { text: "FIO", value: "FIO" }
     ],
     categories: [{}],
-    editedItemClone:"",
+    editedItemClone: "",
     editedIndex: -1,
     editedItem: {
       FIO: "",
@@ -219,18 +252,24 @@ export default {
       photo_src: "",
       category: ""
     },
-    dialog: false
+    dialog: false,
+    forDelete: false,
+    deletedItem:{},
   }),
   methods: {
     ...mapMutations([""]),
     deleteItem(item) {
-      const index = this.contacts.indexOf(item);
-      confirm("Вы действительно хотите удалить данную запись?") &&
-        this.contacts.splice(index, 1);
+      // const index = this.contacts.indexOf(item);
+      // confirm("Вы действительно хотите удалить данную запись?") &&
+      // this.contacts.splice(index, 1);
+      this.deletedItem=item
+      this.forDelete = true;
+      // this.save(item)
     },
     close() {
       this.forEdit = false;
       this.dialog = false;
+      this.forDelete = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
@@ -238,14 +277,30 @@ export default {
     },
 
     save(index) {
-       
-       console.log(this.contacts[this.contacts.indexOf(this.editedItemClone)],'this.contacts[this.contacts.indexOf(this.editedItemClone)]');
-       console.log(this.contacts.indexOf(this.editedItemClone,'indexPF'))
-       console.log(this.editedItem,'this.editedItem');
+      console.log(index,"GUINDEX");
+      if(index){
+        this.contacts.splice(this.contacts.indexOf(this.deletedItem),1)
+      }
+      else{
+      console.log(
+        this.contacts[this.contacts.indexOf(this.editedItemClone)],
+        "this.contacts[this.contacts.indexOf(this.editedItemClone)]"
+      );
+      console.log(index,'INDEX');
+      console.log(this.contacts.indexOf(this.editedItemClone, "indexPF"));
+      console.log(this.editedItem, "this.editedItem");
       //  this.contacts[this.contacts.indexOf(this.editedItemClone)] = Object.assign({},this.editedItem)
-      this.contacts.splice(this.contacts.indexOf(this.editedItem)-1,1,this.editedItem)
-       console.log(this.contacts[this.contacts.indexOf(this.editedItemClone)],'11this.contacts[this.contacts.indexOf(this.editedItemClone)]');
-       this.close();
+      this.contacts.splice(
+        this.contacts.indexOf(this.editedItem) - 1,
+        1,
+        this.editedItem
+      );
+      console.log(
+        this.contacts[this.contacts.indexOf(this.editedItemClone)],
+        "11this.contacts[this.contacts.indexOf(this.editedItemClone)]"
+      );
+      }
+      this.close();
       // console.log(index,'INDEX');
       // if (this.editedIndex > -1) {
       //   Object.assign(this.contacts[this.editedIndex], this.editedItem);
@@ -255,7 +310,6 @@ export default {
       // console.log(index,"INDEX");
       // console.log(this.contacts.indexOf(this.editedItem), "her");
       // console.log(index, "index");
-      
 
       // console.log(this.editedIndex,'eind');
       // console.log(Object.assign(this.contacts[this.editedIndex], this.editedItem),'HEUI');
@@ -263,16 +317,10 @@ export default {
       // this.close();
     },
     editItem(index) {
-      // this.editedItem={
-      //   FIO:'lusta',
-
-      // }
-      this.editedItemClone=index
-      this.editedItem = Object.assign({},index);
-      console.log(Object.assign({},index),'Object.assign({},index)');
+      this.editedItemClone = index;
+      this.editedItem = Object.assign({}, index);
+      console.log(Object.assign({}, index), "Object.assign({},index)");
       this.forEdit = true;
-
-
     },
     getInfoItem(item) {
       this.editedItem = item;
@@ -298,3 +346,8 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+// .custom_field{
+
+// }
+</style>
