@@ -47,6 +47,8 @@
         </v-dialog>
 
         <v-dialog v-model="forEdit" max-width="825px">
+          {{editedItem}}
+          {{contacts}}
           <v-card>
             <v-card-text>
               <v-container>
@@ -58,8 +60,6 @@
                     v-for="(item, i) in editedItem"
                     :key="i"
                   >
-                  {{editedItem[i]}}
-                  
                     <ul>
                       <li v-if="Array.isArray(item)">
                         {{ i }}:{{editedItem[i]}}
@@ -67,7 +67,6 @@
                         <v-text-field
                           v-for="(j,k) in editedItem[i]"
                           :key="k"
-                          :value="j"
                           v-model="editedItem[i][k]"
                         ></v-text-field>
                       </li>
@@ -94,7 +93,6 @@
         :items="contacts"
         class="elevation-1"
         :search="search"
-        item-key="id"
         hide-default-footer
       >
         <!-- КОД НИЖЕ ОТОБРАЖАЕТ ПОЛЯ ТАК КАК НУЖНО-->
@@ -199,10 +197,11 @@ export default {
       { text: "FIO", value: "FIO" }
     ],
     categories: [{}],
+    editedItemClone:"",
     editedIndex: -1,
     editedItem: {
       FIO: "",
-      phone_number: ["0714494247"],
+      phone_number: [],
       email: [],
       web_site: "",
       birthday: "",
@@ -239,15 +238,24 @@ export default {
     },
 
     save(index) {
+       
+       console.log(this.contacts[this.contacts.indexOf(this.editedItemClone)],'this.contacts[this.contacts.indexOf(this.editedItemClone)]');
+       console.log(this.contacts.indexOf(this.editedItemClone,'indexPF'))
+       console.log(this.editedItem,'this.editedItem');
+      //  this.contacts[this.contacts.indexOf(this.editedItemClone)] = Object.assign({},this.editedItem)
+      this.contacts.splice(this.contacts.indexOf(this.editedItem)-1,1,this.editedItem)
+       console.log(this.contacts[this.contacts.indexOf(this.editedItemClone)],'11this.contacts[this.contacts.indexOf(this.editedItemClone)]');
+       this.close();
       // console.log(index,'INDEX');
       // if (this.editedIndex > -1) {
       //   Object.assign(this.contacts[this.editedIndex], this.editedItem);
       // } else {
       //   this.contacts.push(this.editedItem);
       // }
-      console.log(index,"INDEX");
-      console.log(this.contacts.indexOf(this.editedItem), "her");
-      console.log(index, "index");
+      // console.log(index,"INDEX");
+      // console.log(this.contacts.indexOf(this.editedItem), "her");
+      // console.log(index, "index");
+      
 
       // console.log(this.editedIndex,'eind');
       // console.log(Object.assign(this.contacts[this.editedIndex], this.editedItem),'HEUI');
@@ -259,12 +267,11 @@ export default {
       //   FIO:'lusta',
 
       // }
-      console.log(index,'HUINDEX');
-      const start = new Date().getTime();
-      this.editedItem = index;
+      this.editedItemClone=index
+      this.editedItem = Object.assign({},index);
+      console.log(Object.assign({},index),'Object.assign({},index)');
       this.forEdit = true;
-      const end = new Date().getTime();
-      console.log(`SecondWay: ${end - start}ms`);
+
 
     },
     getInfoItem(item) {
