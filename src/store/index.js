@@ -11,9 +11,9 @@ export default new Vuex.Store({
         phone_number: ["+380714494247", "+380714595248"],
         email: ["lusta.vlad@mail.ru", "lusta.vlad2001@gmail.com"],
         web_site: "https://www.youtube.com/",
-        birthday: "04.01.2001",
+        birthday: "2001-01-04",
         company: "Any",
-        photo_src: "/src/static/img/VladLusta.jpg",
+        photo_src: "VladLusta.jpg",
         category: "best friends",
       },
       {
@@ -21,12 +21,13 @@ export default new Vuex.Store({
         phone_number: ["+380714412687", "+380714595213"],
         email: ["nik.kurk@mail.ru", "kurk.nik@gmail.com"],
         web_site: "https://www.youtube.com/",
-        birthday: "23.03.2001",
+        birthday: "2001-03-23",
         company: "Any",
-        photo_src: "../static/img/Kurkur.jpg",
+        photo_src: "Kurkur.jpg",
         category: "collegs",
       }
     ],
+    categories:["best friends","collegs"],
     // contacts_headers:[
 
     // ],
@@ -34,16 +35,17 @@ export default new Vuex.Store({
   mutations: {},
   getters: {
     getData(state) {
-      let clone = {};
 //       for (let keys in state.contacts) {
 // clone[keys]={FIO:}
 //       }
-      console.log(clone);
       return state.contacts;
     },
-    NAME: state => {
-      return state.contacts;
+    getCategories(state){
+      return state.categories
     }
+    // NAME: state => {
+    //   return state.contacts;
+    // }
   },
   actions: {},
   modules: {}

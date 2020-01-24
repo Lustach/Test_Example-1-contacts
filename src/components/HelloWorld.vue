@@ -1,11 +1,12 @@
 <template>
   <v-container>
-    <v-icon>mdi-delete</v-icon>
+    <!-- <v-icon>mdi-delete</v-icon>
+    {{ categories }} -->
     <v-card>
       <v-card-title>
         Все контакты
         <v-spacer></v-spacer>
-        <v-btn color="primary" class="mr-5 mt-3" @click="save()">
+        <v-btn color="primary" class="mr-5 mt-3" @click="addNewContact()">
           Add contact
         </v-btn>
         <v-text-field
@@ -62,6 +63,7 @@
           {{ contacts }} -->
           <v-card>
             <v-card-text>
+              {{editedItem}} HERE
               <v-container>
                 <v-row>
                   <v-col
@@ -72,17 +74,9 @@
                     :key="i"
                   >
                     <ul>
-                      <li v-if="Array.isArray(item)" >
+                      <li v-if="Array.isArray(item)">
                         {{ i }}:
-                        <!-- <p v-for="(j,k) in editedItem[i]" :key="j">{{k}}</p> -->
-                        <!-- <v-text-field
-                          v-for="(j,k) in editedItem[i]"
-                          :key="k"
-                          :value="editedItem[i][k]"
-                          v-model="$event.target.value"
-                        ></v-text-field> -->
-                        <br />
-                        <v-col cols="12" class="pa-0" >
+                        <v-col cols="12" class="pa-0">
                           <input
                             class="custom_field"
                             style="border-bottom-style:solid;
@@ -96,16 +90,28 @@
                             :value="editedItem[i][k]"
                             @input="editedItem[i][k] = $event.target.value"
                           />
-                          <br />
                         </v-col>
                       </li>
-                      <li v-else>
+                      <li v-else-if="i == 'birthday'">
                         <!-- {{editedItem[i]}} -->
                         {{ i }}:
                         <v-text-field
                           :value="editedItem[i]"
                           v-model="editedItem[i]"
                         ></v-text-field>
+                        <v-date-picker
+                          v-model="editedItem[i]"
+                          :value="editedItem[i]"
+                        ></v-date-picker>
+                      </li>
+                      <li v-else>
+                        <v-col cols="12" class="pa-0">
+                          {{ i }}:
+                          <v-text-field
+                            :value="editedItem[i]"
+                            v-model="editedItem[i]"
+                          ></v-text-field>
+                        </v-col>
                       </li>
                     </ul>
                   </v-col>
@@ -132,6 +138,16 @@
         <template #item.phone_number="{item}">
           {{ item.phone_number[0] }}
         </template>
+        <template #item.photo_src="{item}">
+          <!-- {{item.photo_src}} -->
+          <v-img
+            :src="getImgUrl(item.photo_src)"
+            width="75px"
+            height="120px"
+            class="ma-1"
+          >
+          </v-img>
+        </template>
         <template #item.email="{item}">
           <!-- {{ item.email[0] }} -->
           <a :href="'mailto:' + 'item.email[0]'">{{ item.email[0] }}</a>
@@ -153,7 +169,7 @@
       </v-data-table>
     </v-card>
     <v-flex>
-      <v-row>
+      <v-row style="justify-content:center;">
         <v-card class="ma-5" max-width="400px">
           <v-card-title>
             Дни рождения
@@ -171,8 +187,9 @@
             Категории
           </v-card-title>
           <v-data-table
-            :headers="category_header"
+            :headers="categories"
             :items="contacts"
+            group-by="category"
             dense
             hide-default-footer=""
           >
@@ -184,9 +201,11 @@
       </v-row>
     </v-flex>
 
-    <div v-for="(item, i) in contacts" :key="i">
+    <!-- <div v-for="(item, i) in contacts" :key="i">
       {{ item.photo_src }}
-    </div>
+      <img :src="getImgUrl(item.photo_src)" />
+    </div> -->
+    <!-- <img src="../static/img/VladLusta.jpg" alt="" /> -->
     <!-- <v-img src="../images/LustaVlad.jpg"></v-img> -->
   </v-container>
 </template>
@@ -197,27 +216,41 @@ import { mapMutations } from "vuex";
 export default {
   name: "HelloWorld",
   mounted() {
-    this.contacts = this.$store.getters.getData;
+    this.contacts = this.getData;
     console.log(this.contacts, "contacts");
-    console.log(this.$store.getters.getData, "this.$store.getters.getData");
+    // console.log(this.$store.getters.getData, "this.$store.getters.getData");
     for (let key in this.contacts[0]) {
       this.contacts_headers.push({ text: key, value: key });
     }
-    console.log(this.contacts_headers, "this.contacts_headers");
+    console.log(this.getCategories, "getCategories");
+    // this.categories={text:this.getCategories,value:"category"}
+    // for (let key in this.getCategories) {
+    //   // console.log(typeof this.getCategories[key]);
+    //   // if(typeof(this.getCategories[key]) === 'string')
+    //     this.categories.push({text:this.getCategories[key]})
+    //   }
+    this.categories = [
+      { text: "FIO", value: "FIO" }
+      // { text: "phone_number", value: "phone_number" }
+    ];
+    for (let i = 0; i < this.contacts.length; i++) {}
+    console.log(this.categories);
+    // console.log(this.contacts_headers, "this.contacts_headers");
   },
+
   data: () => ({
     contacts: [],
     contacts_headers: [],
     search: "",
     forEdit: false,
     headers: [
+      { text: "photo_src", value: "photo_src" },
       { text: "FIO", value: "FIO" },
       { text: "phone_number", value: "phone_number" },
       { text: "email", value: "email" },
       { text: "web_site", value: "web_site" },
       { text: "birthday", value: "birthday" },
       { text: "company", value: "company" },
-      { text: "photo_src", value: "photo_src" },
       { text: "category", value: "category" },
       { text: "", value: "action", sortable: false }
     ],
@@ -229,7 +262,7 @@ export default {
       { text: "category", value: "category" },
       { text: "FIO", value: "FIO" }
     ],
-    categories: [{}],
+    categories: [],
     editedItemClone: "",
     editedIndex: -1,
     editedItem: {
@@ -254,7 +287,8 @@ export default {
     },
     dialog: false,
     forDelete: false,
-    deletedItem:{},
+    forAdd: false,
+    deletedItem: {}
   }),
   methods: {
     ...mapMutations([""]),
@@ -262,7 +296,7 @@ export default {
       // const index = this.contacts.indexOf(item);
       // confirm("Вы действительно хотите удалить данную запись?") &&
       // this.contacts.splice(index, 1);
-      this.deletedItem=item
+      this.deletedItem = item;
       this.forDelete = true;
       // this.save(item)
     },
@@ -277,44 +311,37 @@ export default {
     },
 
     save(index) {
-      console.log(index,"GUINDEX");
-      if(index){
-        this.contacts.splice(this.contacts.indexOf(this.deletedItem),1)
-      }
-      else{
-      console.log(
-        this.contacts[this.contacts.indexOf(this.editedItemClone)],
-        "this.contacts[this.contacts.indexOf(this.editedItemClone)]"
-      );
-      console.log(index,'INDEX');
-      console.log(this.contacts.indexOf(this.editedItemClone, "indexPF"));
-      console.log(this.editedItem, "this.editedItem");
-      //  this.contacts[this.contacts.indexOf(this.editedItemClone)] = Object.assign({},this.editedItem)
-      this.contacts.splice(
-        this.contacts.indexOf(this.editedItem) - 1,
-        1,
-        this.editedItem
-      );
-      console.log(
-        this.contacts[this.contacts.indexOf(this.editedItemClone)],
-        "11this.contacts[this.contacts.indexOf(this.editedItemClone)]"
-      );
+      if (this.forAdd == false) {
+        console.log(index, "GUINDEX");
+        if (index) {
+          this.contacts.splice(this.contacts.indexOf(this.deletedItem), 1);
+        } else {
+          console.log(
+            this.contacts[this.contacts.indexOf(this.editedItemClone)],
+            "this.contacts[this.contacts.indexOf(this.editedItemClone)]"
+          );
+          console.log(index, "INDEX");
+          console.log(this.contacts.indexOf(this.editedItemClone, "indexPF"));
+          console.log(this.editedItem, "this.editedItem");
+          //  this.contacts[this.contacts.indexOf(this.editedItemClone)] = Object.assign({},this.editedItem)
+          this.contacts.splice(
+            this.contacts.indexOf(this.editedItem) - 1,
+            1,
+            this.editedItem
+          );
+          console.log(
+            this.contacts[this.contacts.indexOf(this.editedItemClone)],
+            "11this.contacts[this.contacts.indexOf(this.editedItemClone)]"
+          );
+        }
+      } else {
+        if(this.editedItem.FIO!=""){
+          if(this.editedItem.photo_src=="")
+            this.editedItem.photo_src="Github_avatar.jpg"
+          this.contacts.push(this.editedItem)
+        }
       }
       this.close();
-      // console.log(index,'INDEX');
-      // if (this.editedIndex > -1) {
-      //   Object.assign(this.contacts[this.editedIndex], this.editedItem);
-      // } else {
-      //   this.contacts.push(this.editedItem);
-      // }
-      // console.log(index,"INDEX");
-      // console.log(this.contacts.indexOf(this.editedItem), "her");
-      // console.log(index, "index");
-
-      // console.log(this.editedIndex,'eind');
-      // console.log(Object.assign(this.contacts[this.editedIndex], this.editedItem),'HEUI');
-      // Object.assign(this.contacts[this.editedIndex], this.editedItem);
-      // this.close();
     },
     editItem(index) {
       this.editedItemClone = index;
@@ -326,6 +353,14 @@ export default {
       this.editedItem = item;
       this.dialog = true;
       console.log(item, "ITEMS");
+    },
+    birthdayDate() {},
+    getImgUrl(pic) {
+      return require("../static/img/" + pic);
+    },
+    addNewContact() {
+      this.forEdit = true;
+      this.forAdd = true;
     }
     // test() {
     //   const start = new Date().getTime();
@@ -336,7 +371,7 @@ export default {
     // }
   },
   computed: {
-    ...mapGetters(["getData"]),
+    ...mapGetters(["getData", "getCategories"]),
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },

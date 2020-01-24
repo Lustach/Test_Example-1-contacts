@@ -45,7 +45,6 @@ import MainBanner from "./components/HelloWorld";
 
 export default {
   name: "App",
-
   components: {
     MainBanner
   },
