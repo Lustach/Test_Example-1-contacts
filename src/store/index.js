@@ -32,7 +32,22 @@ export default new Vuex.Store({
 
     // ],
   },
-  mutations: {},
+  mutations: {
+    addContact(state,object){
+      console.log(state,'state')
+      state.contacts.push(object)
+    },
+    deleteItem(state,payload){
+      state.contacts.splice(payload,1)
+      // this.contacts.splice(this.contacts.indexOf(this.deletedItem), 1);
+    },
+    editItem(state,[index,object]){
+      console.log(index,'index');
+      console.log(object,'object');
+      state.contacts.splice(index,1,object)
+      // this.contacts.indexOf(this.editedItemClone),1,this.editedItem
+    }
+  },
   getters: {
     getData(state) {
 //       for (let keys in state.contacts) {

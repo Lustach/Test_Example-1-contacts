@@ -63,8 +63,7 @@
           {{ contacts }} -->
           <v-card>
             <v-card-text>
-              {{ editedItem }} HERE
-              {{defaultItem}} oops
+              {{ editedItem }} HERE {{ defaultItem }} oops
               <v-container>
                 <v-row>
                   <v-col
@@ -231,13 +230,6 @@ export default {
     for (let key in this.contacts[0]) {
       this.contacts_headers.push({ text: key, value: key });
     }
-    console.log(this.getCategories, "getCategories");
-    // this.categories={text:this.getCategories,value:"category"}
-    // for (let key in this.getCategories) {
-    //   // console.log(typeof this.getCategories[key]);
-    //   // if(typeof(this.getCategories[key]) === 'string')
-    //     this.categories.push({text:this.getCategories[key]})
-    //   }
     this.categories = [
       { text: "FIO", value: "FIO" }
       // { text: "phone_number", value: "phone_number" }
@@ -300,7 +292,7 @@ export default {
     deletedItem: {}
   }),
   methods: {
-    ...mapMutations([""]),
+    ...mapMutations(["addContact",'editItem']),
     deleteItem(item) {
       // const index = this.contacts.indexOf(item);
       // confirm("Вы действительно хотите удалить данную запись?") &&
@@ -315,44 +307,39 @@ export default {
       this.forDelete = false;
       this.forAdd = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
         this.editedIndex = -1;
       }, 300);
     },
 
     save(index) {
+      console.log(index, "HUINDEXX");
       if (this.forAdd == false) {
-        console.log(index, "GUINDEX");
         if (index) {
-          console.log("FINGDELETE");
-          this.contacts.splice(this.contacts.indexOf(this.deletedItem), 1);
+          //для удаления
+          console.log(this.contacts.indexOf(this.deletedItem),'this.contacts.indexOf(this.deletedItem)');
+          // this.contacts.splice(this.contacts.indexOf(this.deletedItem), 1);
+          this.$store.commit('deleteItem',this.contacts.indexOf(this.deletedItem))
         } else {
+          //для реадктирования
           console.log(
             this.contacts[this.contacts.indexOf(this.editedItemClone)],
             "this.contacts[this.contacts.indexOf(this.editedItemClone)]"
           );
-          console.log(index, "INDEX");
-          console.log(this.contacts.indexOf(this.editedItemClone, "indexPF"));
-          console.log(this.editedItem, "this.editedItem");
+          console.log(this.contacts.indexOf(this.editedItemClone), "indexPF");
           //  this.contacts[this.contacts.indexOf(this.editedItemClone)] = Object.assign({},this.editedItem)
-          this.contacts.splice(
-            this.contacts.indexOf(this.editedItemClone),
-            1,
-            this.editedItem
-          );
-          console.log(
-            this.contacts[this.contacts.indexOf(this.editedItemClone)],
-            "11this.contacts[this.contacts.indexOf(this.editedItemClone)]"
-          );
+          // this.contacts.splice(
+          //   this.contacts.indexOf(this.editedItemClone),1,this.editedItem
+          // );
+          this.$store.commit('editItem',[this.contacts.indexOf(this.editedItemClone),this.editedItem])
         }
       } else {
         // if(this.editedItem.FIO!=""){
         if (this.editedItem.photo_src == "")
           this.editedItem.photo_src = "Github_avatar.jpg";
-        this.contacts.push(this.editedItem);
-        console.log(this.editedItem,'THIS.EDITEDITEM');
-        console.log(this.defaultItem,'THIS>DELETEDITEM');
-        this.editedItem = Object.assign({}, this.defaultItem);
+        // this.contacts.push(this.editedItem);
+        this.$store.commit("addContact", this.editedItem);
+        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
         this.forAdd = false;
         // }
       }
@@ -378,9 +365,10 @@ export default {
     addNewContact() {
       this.forEdit = true;
       this.forAdd = true;
-      this.editedItem = Object.assign({}, this.defaultItem); // after edit-button click, contact data saves to editedItem
+      this.editedItem = JSON.parse(JSON.stringify(this.defaultItem)); // after edit-button click, contact data saves to editedItem
     },
     addElementOfArray(element) {
+      console.log(element, "ELEMENT!");
       element.push("");
       // element.push('hui')
       // console.log(element,'element');
@@ -394,7 +382,7 @@ export default {
     // }
   },
   computed: {
-    ...mapGetters(["getData", "getCategories"]),
+    ...mapGetters(["getData"]),
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
