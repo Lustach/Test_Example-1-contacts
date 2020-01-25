@@ -63,7 +63,8 @@
           {{ contacts }} -->
           <v-card>
             <v-card-text>
-              {{editedItem}} HERE
+              {{ editedItem }} HERE
+              {{defaultItem}} oops
               <v-container>
                 <v-row>
                   <v-col
@@ -91,7 +92,12 @@
                             :value="editedItem[i][k]"
                             @input="editedItem[i][k] = $event.target.value"
                           />
-                          <v-btn @click="addElementOfArray(editedItem[i])" color="primary" class="ma-1"><v-icon>mdi-plus</v-icon></v-btn>
+                          <v-btn
+                            @click="addElementOfArray(editedItem[i])"
+                            color="primary"
+                            class="ma-1"
+                            ><v-icon>mdi-plus</v-icon></v-btn
+                          >
                         </v-col>
                       </li>
                       <li v-else-if="i == 'birthday'">
@@ -110,7 +116,7 @@
                         <v-col cols="12" class="pa-0">
                           {{ i }}:
                           <v-text-field
-                          placeholder="v-else"
+                            placeholder="v-else"
                             :value="editedItem[i]"
                             v-model="editedItem[i]"
                           ></v-text-field>
@@ -270,8 +276,8 @@ export default {
     editedIndex: -1,
     editedItem: {
       FIO: "",
-      phone_number: ['',],
-      email: ['',],
+      phone_number: [""],
+      email: [""],
       web_site: "",
       birthday: "",
       company: "",
@@ -280,8 +286,8 @@ export default {
     },
     defaultItem: {
       FIO: "",
-      phone_number: ['',],
-      email: ['',],
+      phone_number: [""],
+      email: [""],
       web_site: "",
       birthday: "",
       company: "",
@@ -307,7 +313,7 @@ export default {
       this.forEdit = false;
       this.dialog = false;
       this.forDelete = false;
-      this.forAdd=false
+      this.forAdd = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
@@ -341,21 +347,24 @@ export default {
         }
       } else {
         // if(this.editedItem.FIO!=""){
-          if(this.editedItem.photo_src=="")
-            this.editedItem.photo_src="Github_avatar.jpg"
-          this.contacts.push(this.editedItem)
-          this.forAdd=false
+        if (this.editedItem.photo_src == "")
+          this.editedItem.photo_src = "Github_avatar.jpg";
+        this.contacts.push(this.editedItem);
+        console.log(this.editedItem,'THIS.EDITEDITEM');
+        console.log(this.defaultItem,'THIS>DELETEDITEM');
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.forAdd = false;
         // }
       }
       this.close();
     },
     editItem(index) {
-      console.log(index,'INDEXINDEX');
+      console.log(index, "INDEXINDEX");
       this.editedItemClone = index;
       this.editedItem = Object.assign({}, index);
       console.log(Object.assign({}, index), "Object.assign({},index)");
       this.forEdit = true;
-      this.forAdd=false;
+      this.forAdd = false;
     },
     getInfoItem(item) {
       this.editedItem = item;
@@ -369,10 +378,10 @@ export default {
     addNewContact() {
       this.forEdit = true;
       this.forAdd = true;
-      this.editedItem = Object.assign({}, this.defaultItem)// after edit-button click, contact data saves to editedItem
+      this.editedItem = Object.assign({}, this.defaultItem); // after edit-button click, contact data saves to editedItem
     },
-    addElementOfArray(element){
-      element.push('')
+    addElementOfArray(element) {
+      element.push("");
       // element.push('hui')
       // console.log(element,'element');
     }
