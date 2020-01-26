@@ -224,7 +224,16 @@ import { mapMutations } from "vuex";
 export default {
   name: "HelloWorld",
   mounted() {
-    this.contacts = this.getData;
+    if (localStorage.getItem("contacts") == null) {
+      this.contacts = localStorage.setItem("contacts", JSON.stringify(this.getData));
+      this.contacts = this.getData;
+    }
+     else {
+      // this.contacts = JSON.parse(localStorage.getItem("contacts"))||[];
+      this.contacts = this.getData;
+    }
+
+
     console.log(this.contacts, "contacts");
     // console.log(this.$store.getters.getData, "this.$store.getters.getData");
     for (let key in this.contacts[0]) {
@@ -292,7 +301,7 @@ export default {
     deletedItem: {}
   }),
   methods: {
-    ...mapMutations(["addContact",'editItem']),
+    ...mapMutations(["addContact", "editItem",'deleteItem']),
     deleteItem(item) {
       // const index = this.contacts.indexOf(item);
       // confirm("Вы действительно хотите удалить данную запись?") &&
@@ -317,9 +326,15 @@ export default {
       if (this.forAdd == false) {
         if (index) {
           //для удаления
-          console.log(this.contacts.indexOf(this.deletedItem),'this.contacts.indexOf(this.deletedItem)');
+          console.log(
+            this.contacts.indexOf(this.deletedItem),
+            "this.contacts.indexOf(this.deletedItem)"
+          );
           // this.contacts.splice(this.contacts.indexOf(this.deletedItem), 1);
-          this.$store.commit('deleteItem',this.contacts.indexOf(this.deletedItem))
+          this.$store.commit(
+            "deleteItem",
+            this.contacts.indexOf(this.deletedItem)
+          );
         } else {
           //для реадктирования
           console.log(
@@ -331,15 +346,22 @@ export default {
           // this.contacts.splice(
           //   this.contacts.indexOf(this.editedItemClone),1,this.editedItem
           // );
-          this.$store.commit('editItem',[this.contacts.indexOf(this.editedItemClone),this.editedItem])
+          this.$store.commit("editItem", [
+            this.contacts.indexOf(this.editedItemClone),
+            this.editedItem
+          ]);
         }
       } else {
         // if(this.editedItem.FIO!=""){
         if (this.editedItem.photo_src == "")
           this.editedItem.photo_src = "Github_avatar.jpg";
         // this.contacts.push(this.editedItem);
-        this.$store.commit("addContact", this.editedItem);
+        // this.$store.commit("addContact", this.editedItem);
+        this.addContact(this.editedItem)
+        console.log('ALLO');
+        console.log(this.editedItem,'do this.editedItem');
         this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
+        console.log(this.editedItem,'posl this.editedItem');
         this.forAdd = false;
         // }
       }
