@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <!-- <v-icon>mdi-delete</v-icon>
-    {{ categories }} -->
     <v-card>
       <v-card-title>
         Все контакты
@@ -39,7 +37,6 @@
                     v-for="(item, i) in editedItem"
                     :key="i"
                   >
-                    <!-- {{i}} <ul v-if="Array.isArray(j)"><li v-for="j in item" :key="j">{{j}}</li></ul> -->
                     <ul>
                       <li v-if="Array.isArray(item)">
                         {{ i }}:
@@ -59,11 +56,8 @@
         </v-dialog>
 
         <v-dialog v-model="forEdit" max-width="825px">
-          <!-- {{ editedItem }}
-          {{ contacts }} -->
           <v-card>
             <v-card-text>
-              {{ editedItem }} HERE {{ defaultItem }} oops
               <v-container>
                 <v-row>
                   <v-col
@@ -79,12 +73,7 @@
                         <v-col cols="12" class="pa-0">
                           <input
                             class="custom_field"
-                            style="border-bottom-style:solid;
-                            border-bottom-width:1px;
-                            border-color:black;
-                            height:32px;width:inherit;color:black;
-                            outline:none;"
-                            placeholder="hello"
+                            style=""
                             type="text"
                             v-for="(j, k) in editedItem[i]"
                             :key="k"
@@ -100,7 +89,6 @@
                         </v-col>
                       </li>
                       <li v-else-if="i == 'birthday'">
-                        <!-- {{editedItem[i]}} -->
                         {{ i }}:
                         <v-text-field
                           :value="editedItem[i]"
@@ -147,7 +135,6 @@
           {{ item.phone_number[0] }}
         </template>
         <template #item.photo_src="{item}">
-          <!-- {{item.photo_src}} -->
           <v-img
             :src="getImgUrl(item.photo_src)"
             width="75px"
@@ -157,7 +144,6 @@
           </v-img>
         </template>
         <template #item.email="{item}">
-          <!-- {{ item.email[0] }} -->
           <a :href="'mailto:' + 'item.email[0]'">{{ item.email[0] }}</a>
         </template>
         <template #item.web_site="{item}">
@@ -208,13 +194,6 @@
         </v-card>
       </v-row>
     </v-flex>
-
-    <!-- <div v-for="(item, i) in contacts" :key="i">
-      {{ item.photo_src }}
-      <img :src="getImgUrl(item.photo_src)" />
-    </div> -->
-    <!-- <img src="../static/img/VladLusta.jpg" alt="" /> -->
-    <!-- <v-img src="../images/LustaVlad.jpg"></v-img> -->
   </v-container>
 </template>
 
@@ -232,20 +211,14 @@ export default {
       // this.contacts = JSON.parse(localStorage.getItem("contacts"))||[];
       this.contacts = this.getData;
     }
-
-
     console.log(this.contacts, "contacts");
-    // console.log(this.$store.getters.getData, "this.$store.getters.getData");
     for (let key in this.contacts[0]) {
       this.contacts_headers.push({ text: key, value: key });
     }
     this.categories = [
       { text: "FIO", value: "FIO" }
-      // { text: "phone_number", value: "phone_number" }
     ];
-    for (let i = 0; i < this.contacts.length; i++) {}
-    console.log(this.categories);
-    // console.log(this.contacts_headers, "this.contacts_headers");
+
   },
 
   data: () => ({
@@ -274,8 +247,7 @@ export default {
     ],
     categories: [],
     editedItemClone: "",
-    editedIndex: -1,
-    editedItem: {
+    editedItem: {// объект с котороым происходят вся логика
       FIO: "",
       phone_number: [""],
       email: [""],
@@ -285,7 +257,7 @@ export default {
       photo_src: "",
       category: ""
     },
-    defaultItem: {
+    defaultItem: {//для указания полей по умолчанию
       FIO: "",
       phone_number: [""],
       email: [""],
@@ -298,17 +270,13 @@ export default {
     dialog: false,
     forDelete: false,
     forAdd: false,
-    deletedItem: {}
+    deletedItem: {},
   }),
   methods: {
     ...mapMutations(["addContact", "editItem",'deleteItem']),
     deleteItem(item) {
-      // const index = this.contacts.indexOf(item);
-      // confirm("Вы действительно хотите удалить данную запись?") &&
-      // this.contacts.splice(index, 1);
       this.deletedItem = item;
       this.forDelete = true;
-      // this.save(item)
     },
     close() {
       this.forEdit = false;
@@ -316,7 +284,7 @@ export default {
       this.forDelete = false;
       this.forAdd = false;
       setTimeout(() => {
-        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
+        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));//Object.assign в случае если свойство объекта есть массив, будет изменять и дефолтИтем
         this.editedIndex = -1;
       }, 300);
     },
@@ -330,44 +298,30 @@ export default {
             this.contacts.indexOf(this.deletedItem),
             "this.contacts.indexOf(this.deletedItem)"
           );
-          // this.contacts.splice(this.contacts.indexOf(this.deletedItem), 1);
           this.$store.commit(
             "deleteItem",
             this.contacts.indexOf(this.deletedItem)
           );
         } else {
           //для реадктирования
-          console.log(
-            this.contacts[this.contacts.indexOf(this.editedItemClone)],
-            "this.contacts[this.contacts.indexOf(this.editedItemClone)]"
-          );
-          console.log(this.contacts.indexOf(this.editedItemClone), "indexPF");
-          //  this.contacts[this.contacts.indexOf(this.editedItemClone)] = Object.assign({},this.editedItem)
-          // this.contacts.splice(
-          //   this.contacts.indexOf(this.editedItemClone),1,this.editedItem
-          // );
           this.$store.commit("editItem", [
             this.contacts.indexOf(this.editedItemClone),
             this.editedItem
           ]);
         }
-      } else {
-        // if(this.editedItem.FIO!=""){
-        if (this.editedItem.photo_src == "")
+      } else { //для добавления
+        if (this.editedItem.photo_src == "")//по дефолту 
           this.editedItem.photo_src = "Github_avatar.jpg";
-        // this.contacts.push(this.editedItem);
-        // this.$store.commit("addContact", this.editedItem);
         this.addContact(this.editedItem)
         console.log('ALLO');
         console.log(this.editedItem,'do this.editedItem');
         this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
         console.log(this.editedItem,'posl this.editedItem');
         this.forAdd = false;
-        // }
       }
       this.close();
     },
-    editItem(index) {
+    editItem(index) {//кнопка редактирования
       console.log(index, "INDEXINDEX");
       this.editedItemClone = index;
       this.editedItem = Object.assign({}, index);
@@ -375,7 +329,7 @@ export default {
       this.forEdit = true;
       this.forAdd = false;
     },
-    getInfoItem(item) {
+    getInfoItem(item) {//кнопка инфы
       this.editedItem = item;
       this.dialog = true;
       console.log(item, "ITEMS");
@@ -392,22 +346,10 @@ export default {
     addElementOfArray(element) {
       console.log(element, "ELEMENT!");
       element.push("");
-      // element.push('hui')
-      // console.log(element,'element');
-    }
-    // test() {
-    //   const start = new Date().getTime();
-    //   for (let i = 0; i < 10000; i++) {
-    //   }
-    //   const end = new Date().getTime();
-    //   console.log(`SecondWay: ${end - start}ms`);
-    // }
+    },
   },
   computed: {
     ...mapGetters(["getData"]),
-    formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    },
     getInfo() {
       this.contacts;
     }
@@ -415,7 +357,11 @@ export default {
 };
 </script>
 <style lang="scss">
-// .custom_field{
-
-// }
+.custom_field{
+  border-bottom-style: solid;
+  border-bottom-width:1px;
+  border-color:rgb(148,148,148);
+  height:32px;width:inherit;
+  outline:none;
+}
 </style>
