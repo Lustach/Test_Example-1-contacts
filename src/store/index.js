@@ -34,7 +34,7 @@ export default new Vuex.Store({
   },
   mutations: {
     addContact(state,object){
-      console.log(state.contacts,'state')
+      // console.log(state.contacts,'state')
 
       let i = JSON.parse(localStorage.getItem('contacts')) || []
       i.push(object)
@@ -48,11 +48,11 @@ export default new Vuex.Store({
       // this.contacts.splice(this.contacts.indexOf(this.deletedItem), 1);
     },
     editItem(state,[index,object]){
-      console.log(index,'index');
-      console.log(object,'object');
+      // console.log(index,'index');
+      // console.log(object,'object');
       state.contacts.splice(index,1,object)
       localStorage.setItem("contacts", JSON.stringify(state.contacts));
-      console.log(JSON.parse(localStorage.getItem('contacts')),'JSON.parse(localStorage.getItem');
+      // console.log(JSON.parse(localStorage.getItem('contacts')),'JSON.parse(localStorage.getItem');
       // this.contacts.indexOf(this.editedItemClone),1,this.editedItem
     }
   },
@@ -62,7 +62,7 @@ export default new Vuex.Store({
 // clone[keys]={FIO:}
 //       }
       if(localStorage.getItem('contacts') !== null){
-        console.log(localStorage.getItem('contacts'),'localStorage.getItem');
+        // console.log(localStorage.getItem('contacts'),'localStorage.getItem');
         state.contacts=JSON.parse(localStorage.getItem('contacts'))
       }
       else{

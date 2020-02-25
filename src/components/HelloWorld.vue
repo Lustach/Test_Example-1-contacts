@@ -99,6 +99,27 @@
                           :value="editedItem[i]"
                         ></v-date-picker>
                       </li>
+                      <li v-else-if="i == 'photo_src'">
+                        <!-- <div class="file-upload-form">
+                Upload an image file:
+                <input type="file" @change="previewImage" accept="image/*">
+            </div> --><v-col cols="12" class="pa-0">
+                          {{ i }}:
+                          <div class="file-upload-form">
+                            Upload an image file:
+                            <input
+                              type="file"
+                              @change="previewImage($event, editedItem)"
+                              accept="image/*"
+                            />
+                          </div>
+                          <!-- <v-text-field
+                            placeholder="v-else"
+                            :value="editedItem[i]"
+                            v-model="editedItem[i]"
+                          ></v-text-field> -->
+                        </v-col>
+                      </li>
                       <li v-else>
                         <v-col cols="12" class="pa-0">
                           {{ i }}:
@@ -135,13 +156,28 @@
           {{ item.phone_number[0] }}
         </template>
         <template #item.photo_src="{item}">
+          <!-- <img :src="imageData"             width="75px"
+            height="120px"
+            class="ma-1" alt="image"/>
+            <div class="image-preview" v-if="imageData.length > 0">
+          <img class="preview" :src="imageData" />
+        </div> -->
           <v-img
-            :src="getImgUrl(item.photo_src)"
+            :src="getImgUrl(item)"
             width="75px"
             height="120px"
             class="ma-1"
           >
           </v-img>
+          <!-- <img
+            :src="getImgUrl(item.photo_src) || imageData"
+            alt=""
+            width="75px"
+            height="120px"
+            class="ma-1"
+          /> -->
+
+          <!-- <img :src="imageData" alt=""> -->
         </template>
         <template #item.email="{item}">
           <a :href="'mailto:' + 'item.email[0]'">{{ item.email[0] }}</a>
@@ -189,6 +225,15 @@
           >
           </v-data-table>
         </v-card>
+        <div class="file-upload-form">
+          Upload an image file:
+          <input type="file" @change="previewImage" accept="image/*" />
+        </div>
+        <div class="image-preview" v-if="imageData.length > 0">
+          <img class="preview" :src="imageData" />
+          <v-img :src="imageData"></v-img>
+        </div>
+        {{ imageData }}
         <v-card>
           <v-simple-table> </v-simple-table>
         </v-card>
@@ -204,21 +249,22 @@ export default {
   name: "HelloWorld",
   mounted() {
     if (localStorage.getItem("contacts") == null) {
-      this.contacts = localStorage.setItem("contacts", JSON.stringify(this.getData));
+      this.contacts = localStorage.setItem(
+        "contacts",
+        JSON.stringify(this.getData)
+      );}
       this.contacts = this.getData;
-    }
-     else {
-      // this.contacts = JSON.parse(localStorage.getItem("contacts"))||[];
-      this.contacts = this.getData;
-    }
-    console.log(this.contacts, "contacts");
+    // } else {
+    //   // this.contacts = JSON.parse(localStorage.getItem("contacts"))||[];
+    //   this.contacts = this.getData;
+    //         console.log(this.contacts);
+    // }
+
     for (let key in this.contacts[0]) {
       this.contacts_headers.push({ text: key, value: key });
     }
-    this.categories = [
-      { text: "FIO", value: "FIO" }
-    ];
-
+    this.categories = [{ text: "FIO", value: "FIO" }];
+    // editedItem
   },
 
   data: () => ({
@@ -226,6 +272,7 @@ export default {
     contacts_headers: [],
     search: "",
     forEdit: false,
+    imageData: "",
     headers: [
       { text: "photo_src", value: "photo_src" },
       { text: "FIO", value: "FIO" },
@@ -247,7 +294,8 @@ export default {
     ],
     categories: [],
     editedItemClone: "",
-    editedItem: {// объект с котороым происходят вся логика
+    editedItem: {
+      // объект с котороым происходят вся логика
       FIO: "",
       phone_number: [""],
       email: [""],
@@ -257,7 +305,8 @@ export default {
       photo_src: "",
       category: ""
     },
-    defaultItem: {//для указания полей по умолчанию
+    defaultItem: {
+      //для указания полей по умолчанию
       FIO: "",
       phone_number: [""],
       email: [""],
@@ -270,10 +319,10 @@ export default {
     dialog: false,
     forDelete: false,
     forAdd: false,
-    deletedItem: {},
+    deletedItem: {}
   }),
   methods: {
-    ...mapMutations(["addContact", "editItem",'deleteItem']),
+    ...mapMutations(["addContact", "editItem", "deleteItem"]),
     deleteItem(item) {
       this.deletedItem = item;
       this.forDelete = true;
@@ -284,13 +333,12 @@ export default {
       this.forDelete = false;
       this.forAdd = false;
       setTimeout(() => {
-        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));//Object.assign в случае если свойство объекта есть массив, будет изменять и дефолтИтем
+        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem)); //Object.assign в случае если свойство объекта есть массив, будет изменять и дефолтИтем
         this.editedIndex = -1;
       }, 300);
     },
 
     save(index) {
-      console.log(index, "HUINDEXX");
       if (this.forAdd == false) {
         if (index) {
           //для удаления
@@ -309,34 +357,41 @@ export default {
             this.editedItem
           ]);
         }
-      } else { //для добавления
-        if (this.editedItem.photo_src == "")//по дефолту 
+      } else {
+        //для добавления
+        if (this.editedItem.photo_src == "")
+          //по дефолту
           this.editedItem.photo_src = "Github_avatar.jpg";
-        this.addContact(this.editedItem)
-        console.log('ALLO');
-        console.log(this.editedItem,'do this.editedItem');
+        this.addContact(this.editedItem);
         this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
-        console.log(this.editedItem,'posl this.editedItem');
         this.forAdd = false;
       }
       this.close();
     },
-    editItem(index) {//кнопка редактирования
-      console.log(index, "INDEXINDEX");
+    editItem(index) {
+      //кнопка редактирования
       this.editedItemClone = index;
       this.editedItem = Object.assign({}, index);
-      console.log(Object.assign({}, index), "Object.assign({},index)");
       this.forEdit = true;
       this.forAdd = false;
     },
-    getInfoItem(item) {//кнопка инфы
+    getInfoItem(item) {
+      //кнопка инфы
       this.editedItem = item;
       this.dialog = true;
-      console.log(item, "ITEMS");
     },
     birthdayDate() {},
     getImgUrl(pic) {
-      return require("../static/img/" + pic);
+      // console.log(typeof this.imageData,'PICTURE');//string
+      if (pic.photo_src == "VladLusta.jpg" || pic.photo_src == "Kurkur.jpg") {
+        return require("../static/img/" + pic.photo_src);
+      } else {
+        return this.contacts[this.contacts.indexOf(pic)].photo_src
+        // return this.imageData;
+      }
+
+      // if(pic='Kurkur.jpg')
+      // return require("../static/img/" + pic);
     },
     addNewContact() {
       this.forEdit = true;
@@ -344,9 +399,26 @@ export default {
       this.editedItem = JSON.parse(JSON.stringify(this.defaultItem)); // after edit-button click, contact data saves to editedItem
     },
     addElementOfArray(element) {
-      console.log(element, "ELEMENT!");
       element.push("");
     },
+    previewImage(event, item) {
+      // Reference to the DOM input element
+      var input = event.target;
+      // Ensure that you have a file before attempting to read it
+      if (input.files && input.files[0]) {
+        // create a new FileReader to read this image and convert to base64 format
+        var reader = new FileReader();
+        // Define a callback function to run, when FileReader finishes its job
+        reader.onload = e => {
+          // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+          // Read image as base64 and set to imageData
+          this.imageData = e.target.result;
+          item.photo_src = this.imageData;
+        };
+        // Start the reader job - read file as a data url (base64 format)
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
   },
   computed: {
     ...mapGetters(["getData"]),
@@ -357,11 +429,13 @@ export default {
 };
 </script>
 <style lang="scss">
-.custom_field{
+.custom_field {
   border-bottom-style: solid;
-  border-bottom-width:1px;
-  border-color:rgb(148,148,148);
-  height:32px;width:inherit;
-  outline:none;
+  border-bottom-width: 1px;
+  border-color: rgb(148, 148, 148);
+  color: black;
+  height: 32px;
+  width: inherit;
+  outline: none;
 }
 </style>
