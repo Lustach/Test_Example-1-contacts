@@ -225,15 +225,6 @@
           >
           </v-data-table>
         </v-card>
-        <div class="file-upload-form">
-          Upload an image file:
-          <input type="file" @change="previewImage" accept="image/*" />
-        </div>
-        <div class="image-preview" v-if="imageData.length > 0">
-          <img class="preview" :src="imageData" />
-          <v-img :src="imageData"></v-img>
-        </div>
-        {{ imageData }}
         <v-card>
           <v-simple-table> </v-simple-table>
         </v-card>
